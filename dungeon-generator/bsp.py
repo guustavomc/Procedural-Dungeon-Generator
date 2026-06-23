@@ -1,5 +1,5 @@
 import random
-from room import Rect
+from room import Rect, Room
 
 
 MIN_SIZE = 6
@@ -33,3 +33,49 @@ class BSPNode:
         if split_horizontally:
             cut = random.randint(self.region.y_rect_top_left_corner + min_size,
                                  self.region.y_rect_bottom_left_corner - min_size)
+            
+            self.left = BSPNode(Rect(self.region.x_rect_top_left_corner, 
+                                     self.region.y_rect_top_left_corner,
+                                     self.region.rect_width,
+                                     cut - self.region.y_rect_top_left_corner))
+            
+            self.right = BSPNode(Rect(self.region.x_rect_top_left_corner, 
+                                     cut,
+                                     self.region.rect_width,
+                                     self.region.y_rect_bottom_left_corner - cut))
+        
+        else:
+            cut = random.randint(self.region.x_rect_top_left_corner + min_size,
+                                 self.region.x_rect_top_right_corner - min_size)
+            
+            self.left = BSPNode(Rect(self.region.x_rect_top_left_corner, 
+                                     self.region.y_rect_top_left_corner,
+                                     cut - self.region.x_rect_top_left_corner,
+                                     self.region.rect_height))
+            
+            self.right = BSPNode(Rect(cut, 
+                                     self.region.y_rect_top_left_corner,
+                                     self.region.x_rect_top_right_corner - cut,
+                                     self.region.rect_height))
+        return True
+    
+    def carve_room(self, room_id: int, margin=2):
+        if not self.is_leaf:
+            return None
+        
+        inner_x = self.region.x_rect_top_left_corner + margin
+        inner_y = self.region.y_rect_top_left_corner + margin
+        inner_width = self.region.rect_width - (margin * 2)
+        inner_height = self.region.rect_height - (margin * 2)
+
+        if inner_width < 3 or inner_height < 3:
+            return None
+        
+        room_width = random.randint(max(3, inner_width // 2), inner_width)
+        room_height = random.randint(max(3, inner_height // 2), inner_height)
+
+        room_x = random.randint(inner_x, inner_x + inner_width - room_width)
+        room_y = random.randint(inner_y, inner_y + inner_height - room_height)
+
+        self.room = Room(rect=Rect(room_x, room_y, room_width, room_height), id=room_id)
+        return self.room
