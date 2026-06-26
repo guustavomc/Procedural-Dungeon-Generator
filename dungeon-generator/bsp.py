@@ -1,5 +1,5 @@
 import random
-from room import Rect, Room
+from room import Corridor, Rect, Room
 
 
 MIN_SIZE = 6
@@ -79,3 +79,34 @@ class BSPNode:
 
         self.room = Room(rect=Rect(room_x, room_y, room_width, room_height), id=room_id)
         return self.room
+    
+    def get_room(self):
+        """Return any one room from this subtree."""
+        if self.is_leaf:
+            return self.room
+        
+        left_room = self.left.get_room() if self.left else None
+        right_room = self.right.get_room() if self.right else None
+        if left_room and right_room:
+            return random.choice([left_room, right_room])
+        return left_room or right_room
+    
+    def get_all_corridors(self):
+        corridors = []
+        if not self.is_leaf:
+            corridors += self.left.get_all_corridors()
+            corridors += self.right.get_all_corridors()
+
+            a = self.left.get_room()
+            b = self.right.get_room()
+
+            if a and b:
+                ax, ay = a.center
+                bx, by = b.center
+
+                if random.random() < 0.5:
+                    bend = (bx, ay)
+                else:
+                    bend = (ax, by)
+                corridors.append(Corridor(start=(ax, ay), end=(bx, by), ben=bend))
+        return corridors
