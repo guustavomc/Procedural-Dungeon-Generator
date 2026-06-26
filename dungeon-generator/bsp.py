@@ -42,28 +42,45 @@ class BSPNode:
             split_horizontally = can_split_horizontally
 
         if split_horizontally:
+            # Cut is a random y-coordinate strictly between the region's top and bottom edges 
+            # Kept at least min_size away from each, so neither half ends up too small)
             cut = random.randint(self.region.y_rect_top_left_corner + min_size,
                                  self.region.y_rect_bottom_left_corner - min_size)
             
+            # Self.left becomes the top rectangle: same x/width as the parent
+            # Starting at the parent's top y, with height = cut - y 
+            # Spans from the top down to the cut line
             self.left = BSPNode(Rect(self.region.x_rect_top_left_corner, 
                                      self.region.y_rect_top_left_corner,
                                      self.region.rect_width,
                                      cut - self.region.y_rect_top_left_corner))
             
+            # Self.right becomes the bottom rectangle: same x/width
+            # Starting at y = cut, with height = y2 - cut 
+            # Spans from the cut line down to the parent's original bottom edge
             self.right = BSPNode(Rect(self.region.x_rect_top_left_corner, 
                                      cut,
                                      self.region.rect_width,
                                      self.region.y_rect_bottom_left_corner - cut))
         
         else:
+            # Cut is a random x-coordinate strictly between the region's left and right edges 
+            # Kept min_size away from each, so neither half is too small
+
             cut = random.randint(self.region.x_rect_top_left_corner + min_size,
                                  self.region.x_rect_top_right_corner - min_size)
             
+            # Self.left becomes the left rectangle: same y/height as the parent
+            # Starting at the parent's left x, with width = cut - x 
+            # Spans from the left edge over to the cut line
             self.left = BSPNode(Rect(self.region.x_rect_top_left_corner, 
                                      self.region.y_rect_top_left_corner,
                                      cut - self.region.x_rect_top_left_corner,
                                      self.region.rect_height))
-            
+             
+            # Self.right becomes the right rectangle: same y/height
+            # Starting at x = cut, with width = x2 - cut 
+            # Spans from the cut line over to the parent's original right edge
             self.right = BSPNode(Rect(cut,
                                      self.region.y_rect_top_left_corner,
                                      self.region.x_rect_top_right_corner - cut,
