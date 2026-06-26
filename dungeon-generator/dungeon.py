@@ -1,3 +1,6 @@
+# Orchestrator: builds the BSP tree, carves rooms, connects them with
+# corridors, and paints the result onto a 2D character grid.
+
 import random
 from typing import Optional
 from bsp import BSPNode
@@ -5,14 +8,14 @@ from room import Rect, Room, Corridor
 
 class Dungeon:
     WALL        = "#"
-    FLOOR       = "." 
+    FLOOR       = "."
     CORRIDOR    = ","
 
     def __init__(self, width=64, height=40, max_depth=5, seed=None):
         self.width = width
         self.height = height
         self.max_depth = max_depth
-        self.seed = seed
+        self.seed = seed       # same seed -> same dungeon, every time
         self.grid = []
         self.rooms = []
         self.corridors = []
@@ -24,7 +27,8 @@ class Dungeon:
         # 1. fill everything with walls
         self.grid = [[self.WALL] * self.width for _ in range(self.height)]
 
-        # 2. build the BSP tree (iterative, avoids Python recursion limit)
+        # 2. build the BSP tree. Iterative (queue-based) rather than
+        # recursive so deep/large maps can't hit Python's recursion limit.
         root = BSPNode(Rect(0, 0, self.width, self.height))
         queue = [(root, 0)]
         while queue:
@@ -38,7 +42,7 @@ class Dungeon:
         self.rooms = []
         self._carve_leaves(root, counter=[0])
 
-        # 4. collect corridors from the tree
+        # 4. collect corridors from the tree (bottom-up, guarantees connectivity)
         self.corridors = root.get_all_corridors()
 
         # 5. paint rooms and corridors onto the grid
@@ -47,6 +51,8 @@ class Dungeon:
         return self
 
     def _carve_leaves(self, node, counter):
+        # Recursive walk of the finished tree: every leaf gets a room
+        # attempt; counter assigns sequential ids across the whole tree.
         if node is None:
             return
         if node.is_leaf:
@@ -59,6 +65,7 @@ class Dungeon:
             self._carve_leaves(node.right, counter)
 
     def _paint_rooms(self):
+        # Overwrite WALL with FLOOR for every tile inside each room's rect.
         for room in self.rooms:
             r = room.rect
             for y in range(r.y_rect_top_left_corner, r.y_rect_bottom_left_corner):
@@ -66,11 +73,14 @@ class Dungeon:
                     self.grid[y][x] = self.FLOOR
 
     def _paint_corridors(self):
+        # Each corridor is drawn as two straight segments through its bend point.
         for c in self.corridors:
             self._line(c.center_room_A, c.center_L_shaped_corner)
             self._line(c.center_L_shaped_corner, c.center_room_B)
 
     def _line(self, a, b):
+        # Draws one straight L-segment: horizontal leg then vertical leg.
+        # Only overwrites WALL tiles, so corridors never stomp on room floors.
         ax, ay = a
         bx, by = b
         # horizontal segment
