@@ -1,6 +1,6 @@
 import argparse
 from dungeon import Dungeon
-from ascii import render
+from ascii_export import render
 
 parser = argparse.ArgumentParser(description="Procedural Dungeon Generator")
 parser.add_argument("--width",     type=int, default=64)
