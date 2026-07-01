@@ -38,18 +38,26 @@ dungeon-generator/
 
 ## How to run it
 
-There's no `main.py` or CLI yet — the generator is currently driven directly from a Python shell or script. From the `dungeon-generator/` directory:
+Basic run with defaults:
 
-```bash
-cd dungeon-generator
-python -c "
-from dungeon import Dungeon
-
-d = Dungeon(width=60, height=30, max_depth=5, seed=42).generate()
-print('\n'.join(''.join(row) for row in d.grid))
-print(len(d.rooms), 'rooms,', len(d.corridors), 'corridors')
-"
 ```
+cd dungeon-generator
+python main.py
+```
+
+With custom parameters:
+
+```
+
+python main.py --width 80 --height 40 --depth 6
+```
+
+With a seed for a reproducible layout:
+
+```
+python main.py --seed 42
+```
+
 
 **Tile legend:**
 - `#` wall
@@ -71,6 +79,6 @@ print(len(d.rooms), 'rooms,', len(d.corridors), 'corridors')
 - [x] `Dungeon` orchestrator (grid fill, tree build, carve, paint)
 - [ ] ASCII renderer module (`exporters/ascii.py`)
 - [ ] JSON exporter (`exporters/json_export.py`) — for Godot / web canvas consumption
-- [ ] `main.py` entry point
+- [x] `main.py` entry point
 - [ ] Tests
 - [ ] STL tile exporter for 3D printing
