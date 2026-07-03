@@ -6,11 +6,10 @@ def export(dungeon):
         "height": dungeon.height,
         "rooms": [
             {
-                "id":r.id,
-                "x": r.x_rect_top_left_corner,
-                "y": r.y_rect_top_left_corner,
-                "width": r.rect_width,
-                "height": r.rect_height
+                "x": r.rect.x_rect_top_left_corner,
+                "y": r.rect.y_rect_top_left_corner,
+                "width": r.rect.rect_width,
+                "height": r.rect.rect_height
             }
             for r in dungeon.rooms
         ],

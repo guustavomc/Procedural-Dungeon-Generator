@@ -1,6 +1,6 @@
 import argparse
 from dungeon import Dungeon
-from ascii_export import render
+from exporters.ascii_export import render
 
 parser = argparse.ArgumentParser(description="Procedural Dungeon Generator")
 parser.add_argument("--width",     type=int, default=64)
@@ -19,7 +19,7 @@ dungeon = Dungeon(
 ).generate()
 
 if args.json:
-    from json_export import export
+    from exporters.json_export import export
     print(export(dungeon))
 else:
     print(render(dungeon))

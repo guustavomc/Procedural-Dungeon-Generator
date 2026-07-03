@@ -62,6 +62,10 @@ With a JSON output:
 python main.py --seed 42 --json
 ```
 
+Save to a file:
+```
+python main.py --seed 42 --json > dungeon.json
+```
 **Tile legend:**
 - `#` wall
 - `.` room floor
