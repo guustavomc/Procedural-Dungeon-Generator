@@ -84,8 +84,8 @@ python main.py --seed 42 --json > dungeon.json
 - [x] `Rect` / `Room` / `Corridor` data structures
 - [x] `BSPNode` splitting, room carving, corridor generation
 - [x] `Dungeon` orchestrator (grid fill, tree build, carve, paint)
-- [ ] ASCII renderer module (`exporters/ascii.py`)
-- [ ] JSON exporter (`exporters/json_export.py`) — for Godot / web canvas consumption
+- [x] ASCII renderer module (`exporters/ascii.py`)
+- [x] JSON exporter (`exporters/json_export.py`) — for Godot / web canvas consumption
 - [x] `main.py` entry point
 - [ ] Tests
 - [ ] STL tile exporter for 3D printing
