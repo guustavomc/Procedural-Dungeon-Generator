@@ -66,6 +66,12 @@ Save to a file:
 ```
 python main.py --seed 42 --json > dungeon.json
 ```
+Run the tests:
+```
+pip install -r requirements-dev.txt
+python -m pytest tests/ -v
+```
+
 **Tile legend:**
 - `#` wall
 - `.` room floor
@@ -87,5 +93,5 @@ python main.py --seed 42 --json > dungeon.json
 - [x] ASCII renderer module (`exporters/ascii.py`)
 - [x] JSON exporter (`exporters/json_export.py`) — for Godot / web canvas consumption
 - [x] `main.py` entry point
-- [ ] Tests
+- [x] Tests
 - [ ] STL tile exporter for 3D printing
