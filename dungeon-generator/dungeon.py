@@ -5,6 +5,8 @@ import random
 from typing import Optional
 from bsp import BSPNode
 from room import Rect, Room, Corridor
+from collections import deque
+
 
 class Dungeon:
     WALL        = "#"
@@ -91,3 +93,22 @@ class Dungeon:
         for y in range(min(ay, by), max(ay, by) + 1):
             if self.grid[y][bx] == self.WALL:
                 self.grid[y][bx] = self.CORRIDOR
+
+    def is_connected(self) -> bool:
+        if not self.rooms:
+            return True
+
+        start = self.rooms[0].center
+        visited = {start}
+        queue = deque([start])
+
+        while queue:
+            x, y = queue.popleft()
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < self.width and 0 <= ny < self.height and (nx, ny) not in visited:
+                    if self.grid[ny][nx] in (self.FLOOR, self.CORRIDOR):
+                        visited.add((nx, ny))
+                        queue.append((nx, ny))
+
+        return all(room.center in visited for room in self.rooms)
