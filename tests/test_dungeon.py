@@ -1,24 +1,5 @@
-from collections import deque
 
 from dungeon import Dungeon
-
-
-def _reachable_tiles(grid, start):
-    height = len(grid)
-    width = len(grid[0])
-    visited = {start}
-    queue = deque([start])
-
-    while queue:
-        x, y = queue.popleft()
-        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < width and 0 <= ny < height and (nx, ny) not in visited:
-                if grid[ny][nx] in (Dungeon.FLOOR, Dungeon.CORRIDOR):
-                    visited.add((nx, ny))
-                    queue.append((nx, ny))
-    return visited
-
 
 class TestGenerate:
     def test_grid_matches_requested_dimensions(self):
@@ -42,9 +23,4 @@ class TestGenerate:
     def test_all_rooms_are_connected(self):
         dungeon = Dungeon(width=64, height=40, max_depth=5, seed=42).generate()
         assert len(dungeon.rooms) > 1
-
-        start = dungeon.rooms[0].center
-        reachable = _reachable_tiles(dungeon.grid, start)
-
-        for room in dungeon.rooms:
-            assert room.center in reachable
+        assert dungeon.is_connected()
