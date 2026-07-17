@@ -103,7 +103,7 @@ python -m pytest tests/ -v
 
 - [ ] **Richer JSON export** — current grid export loses semantic data. The exporter should include the structured room list (id, x, y, width, height, type) and corridor list alongside the character grid, so a consumer like Godot can query "where is room 3" without parsing characters.
 
-- [ ] **Flood fill connectivity check** — add `Dungeon.is_connected() -> bool` that BFS/DFS from any floor tile and verifies all floor tiles are reachable. BSP guarantees this today, but the check becomes essential once room type filtering or conditional corridors are added.
+- [x] **Flood fill connectivity check** — add `Dungeon.is_connected() -> bool` that BFS/DFS from any floor tile and verifies all floor tiles are reachable. BSP guarantees this today, but the check becomes essential once room type filtering or conditional corridors are added.
 
 - [ ] **Room types** — extend `Room` with a `room_type` field (`Enum`: `ENTRANCE`, `EXIT`, `TREASURE`, `BOSS`, `NORMAL`). Assignment logic: deepest leaf nodes → boss rooms, smallest rooms → treasure, everything else → normal. Pairs with the richer JSON export above.
 
