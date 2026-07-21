@@ -1,6 +1,8 @@
 # Pure data structures used by the generator. No generation logic lives here.
 
 from dataclasses import dataclass
+from room_type import RoomType
+
 
 @dataclass
 class Rect:
@@ -23,15 +25,13 @@ class Rect:
     def center(self):
         return (self.x_rect_top_left_corner+ self.rect_width // 2), (self.y_rect_top_left_corner+ self.rect_height // 2)
 
-    @property
-    def room_type(self):
-        return 
 
 @dataclass
 class Room:
     # A Rect with an identity. Carved into BSP leaf nodes by BSPNode.carve_room().
     rect: Rect
     id: int
+    room_type: RoomType = RoomType.NORMAL
 
     @property
     def center(self):

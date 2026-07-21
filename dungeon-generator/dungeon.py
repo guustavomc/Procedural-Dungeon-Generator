@@ -6,6 +6,8 @@ from typing import Optional
 from bsp import BSPNode
 from room import Rect, Room, Corridor
 from collections import deque
+from room_type import RoomType
+
 
 
 class Dungeon:
@@ -43,6 +45,7 @@ class Dungeon:
         # 3. carve rooms into leaves
         self.rooms = []
         self._carve_leaves(root, counter=[0])
+        self._room_depths = {}
 
         # 4. collect corridors from the tree (bottom-up, guarantees connectivity)
         self.corridors = root.get_all_corridors()
@@ -52,7 +55,7 @@ class Dungeon:
         self._paint_corridors()
         return self
 
-    def _carve_leaves(self, node, counter):
+    def _carve_leaves(self, node, counter, depth=0):
         # Recursive walk of the finished tree: every leaf gets a room
         # attempt; counter assigns sequential ids across the whole tree.
         if node is None:
@@ -61,10 +64,33 @@ class Dungeon:
             room = node.carve_room(room_id=counter[0])
             if room:
                 self.rooms.append(room)
+                self._room_depths[room.id] = depth
                 counter[0] += 1
         else:
             self._carve_leaves(node.left, counter)
             self._carve_leaves(node.right, counter)
+
+    def _assign_room_types(self):
+        if not self.rooms:
+            return
+
+        max_depth = max(self._room_depths[r.id] for r in self.rooms)
+        boss_ids = {r.id for r in self.rooms if self._room_depths[r.id] == max_depth}
+
+        remaining = [r for r in self.rooms if r.id not in boss_ids]
+        treasure_ids = set()
+        if remaining:
+            smallest = min(remaining, key=lambda r: r.rect.rect_width * r.rect.rect_height)
+            treasure_ids = {smallest.id}
+
+        for room in self.rooms:
+            if room.id in boss_ids:
+                room.room_type = RoomType.BOSS
+            elif room.id in treasure_ids:
+                room.room_type = RoomType.TREASURE
+            else:
+                room.room_type = RoomType.NORMAL
+
 
     def _paint_rooms(self):
         # Overwrite WALL with FLOOR for every tile inside each room's rect.
