@@ -1,5 +1,6 @@
 
 from dungeon import Dungeon
+from room_type import RoomType
 
 class TestGenerate:
     def test_grid_matches_requested_dimensions(self):
@@ -24,3 +25,10 @@ class TestGenerate:
         dungeon = Dungeon(width=64, height=40, max_depth=5, seed=42).generate()
         assert len(dungeon.rooms) > 1
         assert dungeon.is_connected()
+
+    def test_room_types_are_assigned(self):
+        dungeon = Dungeon(width=64, height=40, max_depth=5, seed=42).generate()
+        types = {room.room_type for room in dungeon.rooms}
+        assert RoomType.BOSS in types
+        assert RoomType.TREASURE in types
+        assert all(rt in RoomType for rt in types)

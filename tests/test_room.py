@@ -1,5 +1,6 @@
 from room import Rect, Room
 
+
 class TestRect:
     def test_x_rect_top_right_corner(self):
         rect = Rect(x_rect_top_left_corner=5, y_rect_top_left_corner=10, rect_width=20, rect_height=8)
@@ -18,3 +19,5 @@ class TestRoom:
         rect = Rect(x_rect_top_left_corner=5, y_rect_top_left_corner=10, rect_width=20, rect_height=8)
         room = Room(rect=rect, id=1)
         assert room.center == rect.center
+
+    
