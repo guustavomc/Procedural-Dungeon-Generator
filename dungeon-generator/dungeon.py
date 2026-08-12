@@ -44,8 +44,9 @@ class Dungeon:
 
         # 3. carve rooms into leaves
         self.rooms = []
-        self._carve_leaves(root, counter=[0])
         self._room_depths = {}
+        self._carve_leaves(root, counter=[0])
+        self._assign_room_types()
 
         # 4. collect corridors from the tree (bottom-up, guarantees connectivity)
         self.corridors = root.get_all_corridors()
@@ -67,8 +68,8 @@ class Dungeon:
                 self._room_depths[room.id] = depth
                 counter[0] += 1
         else:
-            self._carve_leaves(node.left, counter)
-            self._carve_leaves(node.right, counter)
+            self._carve_leaves(node.left, counter, depth + 1)
+            self._carve_leaves(node.right, counter, depth + 1)
 
     def _assign_room_types(self):
         if not self.rooms:
