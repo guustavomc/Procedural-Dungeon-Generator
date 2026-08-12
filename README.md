@@ -99,12 +99,14 @@ python -m pytest tests/ -v
 
 ### Next steps
 
-- [ ] **Player spawn + exit** — mark `rooms[0]` as `@` (spawn) and `rooms[-1]` as `>` (exit) on the grid. Small change, but makes the output feel like an actual dungeon and makes the JSON export meaningful to a game engine.
+- [x] **Flood fill connectivity check** — `Dungeon.is_connected() -> bool` BFS's from a room center over floor/corridor tiles and verifies every room's center is reachable.
 
-- [ ] **Richer JSON export** — current grid export loses semantic data. The exporter should include the structured room list (id, x, y, width, height, type) and corridor list alongside the character grid, so a consumer like Godot can query "where is room 3" without parsing characters.
+- [x] **Room types** — `Room.room_type` field (`Enum`: `ENTRANCE`, `EXIT`, `TREASURE`, `BOSS`, `NORMAL`), assigned during generation: deepest leaf(s) → boss rooms, smallest remaining room → treasure, everything else → normal.
 
-- [x] **Flood fill connectivity check** — add `Dungeon.is_connected() -> bool` that BFS/DFS from any floor tile and verifies all floor tiles are reachable. BSP guarantees this today, but the check becomes essential once room type filtering or conditional corridors are added.
+- [ ] **ENTRANCE/EXIT assignment** — assign `RoomType.ENTRANCE` to `rooms[0]` and `RoomType.EXIT` to `rooms[-1]` (deliberately deferred out of the room types work above, folded into the spawn/exit step below instead).
 
-- [ ] **Room types** — extend `Room` with a `room_type` field (`Enum`: `ENTRANCE`, `EXIT`, `TREASURE`, `BOSS`, `NORMAL`). Assignment logic: deepest leaf nodes → boss rooms, smallest rooms → treasure, everything else → normal. Pairs with the richer JSON export above.
+- [ ] **Player spawn + exit** — render the ENTRANCE room as `@` (spawn) and the EXIT room as `>` on the ASCII grid. Small change, but makes the output feel like an actual dungeon and makes the JSON export meaningful to a game engine.
+
+- [ ] **Richer JSON export** — room id/type aren't in `exporters/json_export.py` yet — it still only exports x/y/width/height. The exporter should include the structured room list (id, x, y, width, height, type) and corridor list alongside the character grid, so a consumer like Godot can query "where is room 3" without parsing characters.
 
 - [ ] **STL tile exporter** — export each tile type (wall, floor, corridor) as a printable 3D tile with standardized connectors, for physical dungeon sets. Builds directly on the STL generation work in [Drawer-Organizer-Builder](https://github.com/guustavomc/Drawer-Organizer-Builder).
