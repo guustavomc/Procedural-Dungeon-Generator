@@ -107,6 +107,6 @@ python -m pytest tests/ -v
 
 - [ ] **Player spawn + exit** — render the ENTRANCE room as `@` (spawn) and the EXIT room as `>` on the ASCII grid. Small change, but makes the output feel like an actual dungeon and makes the JSON export meaningful to a game engine.
 
-- [ ] **Richer JSON export** — room id/type aren't in `exporters/json_export.py` yet — it still only exports x/y/width/height. The exporter should include the structured room list (id, x, y, width, height, type) and corridor list alongside the character grid, so a consumer like Godot can query "where is room 3" without parsing characters.
+- [ ] **Richer JSON export** — room id/type aren't in `exporters/json_export.py` yet — it still only exports x/y/width/height. Add `id`, `type`, and `center` to each room; add `room_a_id`/`room_b_id` to each corridor (currently just raw coordinates, so a consumer can't tell which rooms a corridor connects without recomputing centers); add a `metadata` block (seed, width, height); and consider making the character `grid` optional, since it's redundant with the room/corridor data and bulky for large maps.
 
 - [ ] **STL tile exporter** — export each tile type (wall, floor, corridor) as a printable 3D tile with standardized connectors, for physical dungeon sets. Builds directly on the STL generation work in [Drawer-Organizer-Builder](https://github.com/guustavomc/Drawer-Organizer-Builder).
