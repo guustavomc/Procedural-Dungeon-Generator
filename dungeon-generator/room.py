@@ -32,6 +32,7 @@ class Room:
     rect: Rect
     id: int
     room_type: RoomType = RoomType.NORMAL
+    
 
     @property
     def center(self):
@@ -45,3 +46,5 @@ class Corridor:
     center_room_A: tuple[int, int]
     center_room_B: tuple[int, int]
     center_L_shaped_corner: tuple[int, int]
+    room_a_id: int
+    room_b_id: int

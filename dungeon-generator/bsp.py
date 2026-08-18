@@ -150,5 +150,12 @@ class BSPNode:
                     bend = (bx, ay)
                 else:
                     bend = (ax, by)
-                corridors.append(Corridor(center_room_A=(ax, ay), center_room_B=(bx, by),center_L_shaped_corner=bend))
+
+                corridors.append(Corridor(
+                center_room_A=(ax, ay),
+                center_room_B=(bx, by),
+                center_L_shaped_corner=bend,
+                room_a_id=a.id,
+                room_b_id=b.id
+            ))
         return corridors

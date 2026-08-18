@@ -1,7 +1,8 @@
 import json
 
-def export(dungeon):
-    return json.dumps({
+def export(dungeon, include_grid=True):
+    data = {
+        "seed": dungeon.seed,
         "width": dungeon.width,
         "height": dungeon.height,
         "rooms": [
@@ -9,7 +10,10 @@ def export(dungeon):
                 "x": r.rect.x_rect_top_left_corner,
                 "y": r.rect.y_rect_top_left_corner,
                 "width": r.rect.rect_width,
-                "height": r.rect.rect_height
+                "height": r.rect.rect_height,
+                "id": r.id,
+                "type": r.room_type.name,
+                "center": list(r.center)
             }
             for r in dungeon.rooms
         ],
@@ -17,10 +21,16 @@ def export(dungeon):
             {
                 "start": list(c.center_room_A),
                 "end": list(c.center_room_B),
-                "bend": list(c.center_L_shaped_corner)
+                "bend": list(c.center_L_shaped_corner),
+                "room_a_id": c.room_a_id,
+                "room_b_id": c.room_b_id
             }
             for c in dungeon.corridors
-        ],
-        "grid": dungeon.grid
-    }, indent=2
-    )
+        ]
+    }
+
+    if include_grid:
+        data["grid"] = dungeon.grid
+
+    return json.dumps(data, indent=2)
+    
