@@ -30,10 +30,29 @@ class TestJsonExport:
         data = json.loads(export(dungeon))
 
         first = data["rooms"][0]
-        rect = dungeon.rooms[0].rect
+        room = dungeon.rooms[0]
+        rect = room.rect
         assert first == {
             "x": rect.x_rect_top_left_corner,
             "y": rect.y_rect_top_left_corner,
             "width": rect.rect_width,
             "height": rect.rect_height,
+            "id": room.id,
+            "type": room.room_type.name,
+            "center": list(room.center)
         }
+
+    def test_corridor_fields_reference_real_rooms(self):
+        dungeon = Dungeon(width=30, height=15, seed=1).generate()
+        data = json.loads(export(dungeon))
+
+        room_ids = {r.id for r in dungeon.rooms}
+        for corridor in data["corridors"]:
+            assert corridor["room_a_id"] in room_ids
+            assert corridor["room_b_id"] in room_ids
+
+    def test_grid_omitted_when_not_requested(self):
+        dungeon = Dungeon(width=30, height=15, seed=1).generate()
+        data = json.loads(export(dungeon, include_grid=False))
+
+        assert "grid" not in data

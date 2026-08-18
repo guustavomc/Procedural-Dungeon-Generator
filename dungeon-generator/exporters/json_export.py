@@ -1,7 +1,8 @@
 import json
 
-def export(dungeon):
-    return json.dumps({
+def export(dungeon, include_grid=True):
+    data = {
+        "seed": dungeon.seed,
         "width": dungeon.width,
         "height": dungeon.height,
         "rooms": [
@@ -25,7 +26,11 @@ def export(dungeon):
                 "room_b_id": c.room_b_id
             }
             for c in dungeon.corridors
-        ],
-        "grid": dungeon.grid
-    }, indent=2
-    )
+        ]
+    }
+
+    if include_grid:
+        data["grid"] = dungeon.grid
+
+    return json.dumps(data, indent=2)
+    
