@@ -32,3 +32,8 @@ class TestGenerate:
         assert RoomType.BOSS in types
         assert RoomType.TREASURE in types
         assert all(rt in RoomType for rt in types)
+
+    def test_entrance_and_exit_are_assigned(self):
+        dungeon = Dungeon(width=64, height=40, max_depth=5, seed=42).generate()
+        assert dungeon.rooms[0].room_type == RoomType.ENTRANCE
+        assert dungeon.rooms[-1].room_type == RoomType.EXIT
