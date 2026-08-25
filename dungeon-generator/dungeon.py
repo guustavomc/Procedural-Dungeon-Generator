@@ -47,6 +47,7 @@ class Dungeon:
         self._room_depths = {}
         self._carve_leaves(root, counter=[0])
         self._assign_room_types()
+        self._assign_spawn_exit()
 
         # 4. collect corridors from the tree (bottom-up, guarantees connectivity)
         self.corridors = root.get_all_corridors()
@@ -92,6 +93,12 @@ class Dungeon:
             else:
                 room.room_type = RoomType.NORMAL
 
+    def _assign_spawn_exit(self):
+        if not self.rooms:
+            return
+
+        self.rooms[0].room_type = RoomType.ENTRANCE
+        self.rooms[-1].room_type = RoomType.EXIT
 
     def _paint_rooms(self):
         # Overwrite WALL with FLOOR for every tile inside each room's rect.
