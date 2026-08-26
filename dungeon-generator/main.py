@@ -8,7 +8,7 @@ parser.add_argument("--height",    type=int, default=40)
 parser.add_argument("--depth",     type=int, default=5)
 parser.add_argument("--seed",      type=int, default=None)
 parser.add_argument("--json", action="store_true", default=False)
-parser.add_argument("--no-grid", action="store_true", default=False)
+parser.add_argument("--grid", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -21,7 +21,7 @@ dungeon = Dungeon(
 
 if args.json:
     from exporters.json_export import export
-    print(export(dungeon, include_grid=not args.no_grid))
+    print(export(dungeon, include_grid= args.grid))
 else:
     print(render(dungeon))
     print(f"\n{len(dungeon.rooms)} rooms, {len(dungeon.corridors)} corridors")
