@@ -103,7 +103,7 @@ python -m pytest tests/ -v
 
 - [x] **Room types** — `Room.room_type` field (`Enum`: `ENTRANCE`, `EXIT`, `TREASURE`, `BOSS`, `NORMAL`), assigned during generation: deepest leaf(s) → boss rooms, smallest remaining room → treasure, everything else → normal.
 
-- [ ] **ENTRANCE/EXIT assignment** — assign `RoomType.ENTRANCE` to `rooms[0]` and `RoomType.EXIT` to `rooms[-1]` (deliberately deferred out of the room types work above, folded into the spawn/exit step below instead).
+- [x] **ENTRANCE/EXIT assignment** — assign `RoomType.ENTRANCE` to `rooms[0]` and `RoomType.EXIT` to `rooms[-1]` (deliberately deferred out of the room types work above, folded into the spawn/exit step below instead).
 
 - [ ] **Player spawn + exit** — render the ENTRANCE room as `@` (spawn) and the EXIT room as `>` on the ASCII grid. Small change, but makes the output feel like an actual dungeon and makes the JSON export meaningful to a game engine.
 
