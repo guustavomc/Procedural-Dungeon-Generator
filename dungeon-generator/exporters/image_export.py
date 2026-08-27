@@ -18,6 +18,21 @@ def export(dungeon, tile_size=16):
     draw = ImageDraw.Draw(img)
 
     for y, row in enumerate(dungeon.grid):
-        for x, title in enumerate(row):
+        for x, tile in enumerate(row):
             if tile == dungeon.CORRIDOR:
-                _fill_block(draw, x, y, 1, 1, tile_size, CORRIDOR_COLOR)
+                fill_block(draw, x, y, 1, 1, tile_size, CORRIDOR_COLOR)
+
+def fill_block(draw, 
+               x_rect_top_left_corner, 
+               y_rect_top_left_corner, 
+               rect_width, 
+               rect_height, 
+               tile_size,
+               color):
+    draw.rectangle(x_rect_top_left_corner * tile_size,
+                   y_rect_top_left_corner * tile_size,
+                   (x_rect_top_left_corner + rect_width) * tile_size -1,
+                   (y_rect_top_left_corner + rect_height) * tile_size -1,
+                    fill = color,)
+        
+    
