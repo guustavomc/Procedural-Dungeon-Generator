@@ -16,3 +16,8 @@ ROOM_COLORS = {
 def export(dungeon, tile_size=16):
     img = Image.new("RGB", (dungeon.width * tile_size, dungeon.height * tile_size), WALL_COLOR,)
     draw = ImageDraw.Draw(img)
+
+    for y, row in enumerate(dungeon.grid):
+        for x, title in enumerate(row):
+            if tile == dungeon.CORRIDOR:
+                _fill_block(draw, x, y, 1, 1, tile_size, CORRIDOR_COLOR)
