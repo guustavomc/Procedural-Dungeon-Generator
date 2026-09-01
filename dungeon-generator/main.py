@@ -9,6 +9,9 @@ parser.add_argument("--depth",     type=int, default=5)
 parser.add_argument("--seed",      type=int, default=None)
 parser.add_argument("--json", action="store_true", default=False)
 parser.add_argument("--grid", action="store_true", default=False)
+parser.add_argument("--image", type=str, default=None)
+
+
 
 args = parser.parse_args()
 
@@ -20,8 +23,12 @@ dungeon = Dungeon(
 ).generate()
 
 if args.json:
-    from exporters.json_export import export
-    print(export(dungeon, include_grid= args.grid))
+    from exporters.json_export import export as json_exporter
+    print(json_exporter(dungeon, include_grid=args.grid))
+elif args.image:
+    from exporters.image_export import export as export_image
+    export_image(dungeon).save(args.image)
+    print(f"Saved image to {args.image}")
 else:
     print(render(dungeon))
     print(f"\n{len(dungeon.rooms)} rooms, {len(dungeon.corridors)} corridors")

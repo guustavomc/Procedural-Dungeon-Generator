@@ -38,6 +38,12 @@ dungeon-generator/
 
 ## How to run it
 
+Install runtime dependencies (needed for the image exporter):
+
+```
+pip install -r requirements.txt
+```
+
 Basic run with defaults:
 
 ```
@@ -65,6 +71,10 @@ python main.py --seed 42 --json
 Save to a file:
 ```
 python main.py --seed 42 --json > dungeon.json
+```
+With a PNG image output:
+```
+python main.py --seed 42 --image dungeon.png
 ```
 Run the tests:
 ```
@@ -105,8 +115,10 @@ python -m pytest tests/ -v
 
 - [x] **ENTRANCE/EXIT assignment** — assign `RoomType.ENTRANCE` to `rooms[0]` and `RoomType.EXIT` to `rooms[-1]` (deliberately deferred out of the room types work above, folded into the spawn/exit step below instead).
 
+- [x] **Image Exporter** —  Colors rooms by room_type, and needs no event loop or window management.
+
 - [ ] **Player spawn + exit** — render the ENTRANCE room as `@` (spawn) and the EXIT room as `>` on the ASCII grid. Small change, but makes the output feel like an actual dungeon and makes the JSON export meaningful to a game engine.
 
-- [ ] **Richer JSON export** — room id/type aren't in `exporters/json_export.py` yet — it still only exports x/y/width/height. Add `id`, `type`, and `center` to each room; add `room_a_id`/`room_b_id` to each corridor (currently just raw coordinates, so a consumer can't tell which rooms a corridor connects without recomputing centers); add a `metadata` block (seed, width, height); and consider making the character `grid` optional, since it's redundant with the room/corridor data and bulky for large maps.
+- [x] **Richer JSON export** — room id/type aren't in `exporters/json_export.py` yet — it still only exports x/y/width/height. Add `id`, `type`, and `center` to each room; add `room_a_id`/`room_b_id` to each corridor.
 
 - [ ] **STL tile exporter** — export each tile type (wall, floor, corridor) as a printable 3D tile with standardized connectors, for physical dungeon sets. Builds directly on the STL generation work in [Drawer-Organizer-Builder](https://github.com/guustavomc/Drawer-Organizer-Builder).
