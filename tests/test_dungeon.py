@@ -37,3 +37,24 @@ class TestGenerate:
         dungeon = Dungeon(width=64, height=40, max_depth=5, seed=42).generate()
         assert dungeon.rooms[0].room_type == RoomType.ENTRANCE
         assert dungeon.rooms[-1].room_type == RoomType.EXIT
+
+    def test_spawn_and_exit_markers_are_placed(self):
+        dungeon = Dungeon(width=64, height=40, max_depth=5, seed=42).generate()
+        entrance = next(r for r in dungeon.rooms if r.room_type == RoomType.ENTRANCE)
+        exit_room = next(r for r in dungeon.rooms if r.room_type == RoomType.EXIT)
+
+        spawn_tiles = [
+            (x, y)
+            for y, row in enumerate(dungeon.grid)
+            for x, tile in enumerate(row)
+            if tile == Dungeon.SPAWN
+        ]
+        exit_tiles = [
+            (x, y)
+            for y, row in enumerate(dungeon.grid)
+            for x, tile in enumerate(row)
+            if tile == Dungeon.EXIT_TILE
+        ]
+
+        assert spawn_tiles == [entrance.center]
+        assert exit_tiles == [exit_room.center]
