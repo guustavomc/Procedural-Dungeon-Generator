@@ -14,6 +14,8 @@ class Dungeon:
     WALL        = "#"
     FLOOR       = "."
     CORRIDOR    = ","
+    SPAWN       = "@"
+    EXIT_TILE   = ">"
 
     def __init__(self, width=64, height=40, max_depth=5, seed=None):
         self.width = width
@@ -55,6 +57,7 @@ class Dungeon:
         # 5. paint rooms and corridors onto the grid
         self._paint_rooms()
         self._paint_corridors()
+        self._paint_spawn_exit()
         return self
 
     def _carve_leaves(self, node, counter, depth=0):
@@ -114,6 +117,14 @@ class Dungeon:
             self._line(c.center_room_A, c.center_L_shaped_corner)
             self._line(c.center_L_shaped_corner, c.center_room_B)
 
+    def _paint_spawn_exit(self):
+        for room in self.rooms:
+            x, y = room.center
+            if room.room_type == RoomType.ENTRANCE:
+                self.grid[y][x] = self.SPAWN
+            elif room.room_type == RoomType.EXIT:
+                self.grid[y][x] = self.EXIT_TILE
+
     def _line(self, a, b):
         # Draws one straight L-segment: horizontal leg then vertical leg.
         # Only overwrites WALL tiles, so corridors never stomp on room floors.
@@ -141,7 +152,7 @@ class Dungeon:
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 nx, ny = x + dx, y + dy
                 if 0 <= nx < self.width and 0 <= ny < self.height and (nx, ny) not in visited:
-                    if self.grid[ny][nx] in (self.FLOOR, self.CORRIDOR):
+                    if self.grid[ny][nx] in (self.FLOOR, self.CORRIDOR, self.SPAWN, self.EXIT_TILE):
                         visited.add((nx, ny))
                         queue.append((nx, ny))
 

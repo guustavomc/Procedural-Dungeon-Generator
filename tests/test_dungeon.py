@@ -10,7 +10,7 @@ class TestGenerate:
 
     def test_grid_only_contains_known_tiles(self):
         dungeon = Dungeon(width=50, height=30, seed=1).generate()
-        allowed = {Dungeon.WALL, Dungeon.FLOOR, Dungeon.CORRIDOR}
+        allowed = {Dungeon.WALL, Dungeon.FLOOR, Dungeon.CORRIDOR, Dungeon.SPAWN, Dungeon.EXIT_TILE}
         assert all(tile in allowed for row in dungeon.grid for tile in row)
 
     def test_same_seed_is_reproducible(self):
