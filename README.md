@@ -123,4 +123,6 @@ python -m pytest tests/ -v
 
 - [x] **Richer JSON export** — room id/type aren't in `exporters/json_export.py` yet — it still only exports x/y/width/height. Add `id`, `type`, and `center` to each room; add `room_a_id`/`room_b_id` to each corridor.
 
+- [ ] **Image exporter color legend** — `exporters/image_export.py` colors rooms by `room_type` (`WALL_COLOR`, `CORRIDOR_COLOR`, `ROOM_COLORS`) but the exported PNG has no key explaining what each color means. Render a legend (swatch + label per `RoomType`, plus wall/corridor) onto the image, or as a separate strip, so the output is readable without reading the source.
+
 - [ ] **STL tile exporter** — export each tile type (wall, floor, corridor) as a printable 3D tile with standardized connectors, for physical dungeon sets. Builds directly on the STL generation work in [Drawer-Organizer-Builder](https://github.com/guustavomc/Drawer-Organizer-Builder).
