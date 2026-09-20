@@ -10,6 +10,8 @@ parser.add_argument("--seed",      type=int, default=None)
 parser.add_argument("--json", action="store_true", default=False)
 parser.add_argument("--grid", action="store_true", default=False)
 parser.add_argument("--image", type=str, default=None)
+parser.add_argument("--no-legend", action="store_true", default=False)
+
 
 
 
@@ -27,7 +29,7 @@ if args.json:
     print(json_exporter(dungeon, include_grid=args.grid))
 elif args.image:
     from exporters.image_export import export as export_image
-    export_image(dungeon).save(args.image)
+    export_image(dungeon, include_legend=not args.no_legend).save(args.image)
     print(f"Saved image to {args.image}")
 else:
     print(render(dungeon))
