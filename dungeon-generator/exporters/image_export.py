@@ -1,4 +1,4 @@
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 from room_type import RoomType
 
@@ -13,8 +13,30 @@ ROOM_COLORS = {
     RoomType.NORMAL: (200, 200, 200),
 }
 
-def export(dungeon, tile_size=16):
-    img = Image.new("RGB", (dungeon.width * tile_size, dungeon.height * tile_size), WALL_COLOR,)
+LEGEND_ENTRIES = [
+    ("Wall", WALL_COLOR), 
+    ("Corridor", CORRIDOR_COLOR)] + [
+    (rt.name.title(), color) for rt, 
+    color in ROOM_COLORS.items()
+]
+
+LEGEND_SWATCH_SIZE = 12
+LEGEND_PADDING = 6
+LEGEND_ROW_HEIGHT = 18
+
+def legend_segment_height():
+    return LEGEND_PADDING * 2 + len(LEGEND_ENTRIES) * LEGEND_ROW_HEIGHT
+
+def export(dungeon, tile_size=16, include_legend=True):
+    grid_width = dungeon.width * tile_size
+    grid_height = dungeon.height * tile_size
+    legend_height = legend_segment_height() if include_legend else 0
+
+    img = Image.new(
+        "RGB",
+        (grid_width, grid_height + legend_height),
+        WALL_COLOR,
+    )    
     draw = ImageDraw.Draw(img)
 
     for y, row in enumerate(dungeon.grid):
@@ -33,7 +55,12 @@ def export(dungeon, tile_size=16):
             tile_size,
             ROOM_COLORS[room.room_type],
         )
+
+    if include_legend:
+        _draw_legend(draw, y_start=grid_height)
+
     return img
+
 
     
 
@@ -53,5 +80,23 @@ def fill_block(draw,
         ],
         fill=color,
     )
+
+def _draw_legend(draw, y_start):
+    font = ImageFont.load_default()
+    y = y_start + LEGEND_PADDING
+
+    for label, color in LEGEND_ENTRIES:
+        draw.rectangle(
+            [LEGEND_PADDING, y, LEGEND_PADDING + LEGEND_SWATCH_SIZE, y + LEGEND_SWATCH_SIZE],
+            fill=color,
+        )
+        draw.text(
+            (LEGEND_PADDING + LEGEND_SWATCH_SIZE + LEGEND_PADDING, y),
+            label,
+            font=font,
+            fill=(255, 255, 255),
+        )
+        y += LEGEND_ROW_HEIGHT
+
         
     
