@@ -10,11 +10,12 @@ MIN_SIZE = 6  # smallest a region's half can be after a split
 class BSPNode:
     # One rectangular region of the map. Starts as a leaf (left/right None);
     # once split() succeeds it becomes an internal node with two children.
-    def __init__(self, region: Rect):
+    def __init__(self, region, rng=random):
         self.region = region
         self.left = None    # child node after split, else None
         self.right = None   # child node after split, else None
         self.room = None    # only ever set on leaf nodes, via carve_room()
+        self.rng = rng
 
     @property
     def is_leaf(self):
@@ -44,7 +45,7 @@ class BSPNode:
         if split_horizontally:
             # Cut is a random y-coordinate strictly between the region's top and bottom edges 
             # Kept at least min_size away from each, so neither half ends up too small)
-            cut = random.randint(self.region.y_rect_top_left_corner + min_size,
+            cut = self.rng.randint(self.region.y_rect_top_left_corner + min_size,
                                  self.region.y_rect_bottom_left_corner - min_size)
             
             # Self.left becomes the top rectangle: same x/width as the parent
@@ -53,7 +54,7 @@ class BSPNode:
             self.left = BSPNode(Rect(self.region.x_rect_top_left_corner, 
                                      self.region.y_rect_top_left_corner,
                                      self.region.rect_width,
-                                     cut - self.region.y_rect_top_left_corner))
+                                     cut - self.region.y_rect_top_left_corner), self.rng)
             
             # Self.right becomes the bottom rectangle: same x/width
             # Starting at y = cut, with height = y2 - cut 
@@ -61,13 +62,13 @@ class BSPNode:
             self.right = BSPNode(Rect(self.region.x_rect_top_left_corner, 
                                      cut,
                                      self.region.rect_width,
-                                     self.region.y_rect_bottom_left_corner - cut))
+                                     self.region.y_rect_bottom_left_corner - cut), self.rng)
         
         else:
             # Cut is a random x-coordinate strictly between the region's left and right edges 
             # Kept min_size away from each, so neither half is too small
 
-            cut = random.randint(self.region.x_rect_top_left_corner + min_size,
+            cut =  self.rng.randint(self.region.x_rect_top_left_corner + min_size,
                                  self.region.x_rect_top_right_corner - min_size)
             
             # Self.left becomes the left rectangle: same y/height as the parent
@@ -76,7 +77,7 @@ class BSPNode:
             self.left = BSPNode(Rect(self.region.x_rect_top_left_corner, 
                                      self.region.y_rect_top_left_corner,
                                      cut - self.region.x_rect_top_left_corner,
-                                     self.region.rect_height))
+                                     self.region.rect_height), self.rng)
              
             # Self.right becomes the right rectangle: same y/height
             # Starting at x = cut, with width = x2 - cut 
@@ -84,7 +85,7 @@ class BSPNode:
             self.right = BSPNode(Rect(cut,
                                      self.region.y_rect_top_left_corner,
                                      self.region.x_rect_top_right_corner - cut,
-                                     self.region.rect_height))
+                                     self.region.rect_height), self.rng)
         return True
 
     def carve_room(self, room_id: int, margin=2):
@@ -105,12 +106,12 @@ class BSPNode:
 
         # Room size: somewhere between half the inner area and the full
         # inner area, so rooms vary instead of always filling their leaf.
-        room_width = random.randint(max(3, inner_width // 2), inner_width)
-        room_height = random.randint(max(3, inner_height // 2), inner_height)
+        room_width = self.rng.randint(max(3, inner_width // 2), inner_width)
+        room_height = self.rng.randint(max(3, inner_height // 2), inner_height)
 
         # Random position within the inner bounds that still fits the room.
-        room_x = random.randint(inner_x, inner_x + inner_width - room_width)
-        room_y = random.randint(inner_y, inner_y + inner_height - room_height)
+        room_x = self.rng.randint(inner_x, inner_x + inner_width - room_width)
+        room_y = self.rng.randint(inner_y, inner_y + inner_height - room_height)
 
         self.room = Room(rect=Rect(room_x, room_y, room_width, room_height), id=room_id)
         return self.room
@@ -123,7 +124,7 @@ class BSPNode:
         left_room = self.left.get_room() if self.left else None
         right_room = self.right.get_room() if self.right else None
         if left_room and right_room:
-            return random.choice([left_room, right_room])
+            return  self.rng.choice([left_room, right_room])
         return left_room or right_room
 
     def get_all_corridors(self):
@@ -146,7 +147,7 @@ class BSPNode:
                 # Coin flip decides the L-shape's bend: horizontal-then-vertical
                 # vs. vertical-then-horizontal, so corridors don't all bend
                 # the same way.
-                if random.random() < 0.5:
+                if  self.rng.random() < 0.5:
                     bend = (bx, ay)
                 else:
                     bend = (ax, by)

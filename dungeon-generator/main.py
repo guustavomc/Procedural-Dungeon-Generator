@@ -13,24 +13,26 @@ parser.add_argument("--image", type=str, default=None)
 parser.add_argument("--no-legend", action="store_true", default=False)
 
 
+def main(argv=None):
+    args = parser.parse_args(argv)
+
+    dungeon = Dungeon(
+        width=args.width,
+        height=args.height,
+        max_depth=args.depth,
+        seed=args.seed
+    ).generate()
+
+    if args.json:
+        from exporters.json_export import export as json_exporter
+        print(json_exporter(dungeon, include_grid=args.grid))
+    elif args.image:
+        from exporters.image_export import export as export_image
+        export_image(dungeon, include_legend=not args.no_legend).save(args.image)
+        print(f"Saved image to {args.image}")
+    else:
+        print(render(dungeon))
+        print(f"\n{len(dungeon.rooms)} rooms, {len(dungeon.corridors)} corridors")
 
 
-args = parser.parse_args()
-
-dungeon = Dungeon(
-    width=args.width,
-    height=args.height,
-    max_depth=args.depth,
-    seed=args.seed
-).generate()
-
-if args.json:
-    from exporters.json_export import export as json_exporter
-    print(json_exporter(dungeon, include_grid=args.grid))
-elif args.image:
-    from exporters.image_export import export as export_image
-    export_image(dungeon, include_legend=not args.no_legend).save(args.image)
-    print(f"Saved image to {args.image}")
-else:
-    print(render(dungeon))
-    print(f"\n{len(dungeon.rooms)} rooms, {len(dungeon.corridors)} corridors")
+if __name__ == "__main__": main()

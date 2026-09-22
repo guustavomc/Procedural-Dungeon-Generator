@@ -12,9 +12,24 @@ A BSP (Binary Space Partitioning) based procedural dungeon generator written in 
 
 ```
 dungeon-generator/
-├── room.py     # Rect, Room, and Corridor data structures
-├── bsp.py      # BSPNode: tree splitting, room carving, corridor connections
-└── dungeon.py  # Dungeon: orchestrates generation and paints the grid
+├── room.py            # Rect, Room, and Corridor data structures
+├── room_type.py       # RoomType enum (ENTRANCE, EXIT, TREASURE, BOSS, NORMAL)
+├── bsp.py             # BSPNode: tree splitting, room carving, corridor connections
+├── dungeon.py         # Dungeon: orchestrates generation and paints the grid
+├── main.py            # CLI entry point
+└── exporters/
+    ├── ascii_export.py  # renders the grid as a text block
+    ├── json_export.py   # rooms/corridors(/grid) as JSON, for Godot / web canvas
+    └── image_export.py  # renders the grid as a PNG, with an optional legend
+
+tests/
+├── conftest.py
+├── test_room.py
+├── test_bsp.py
+├── test_dungeon.py
+├── test_exporters.py
+├── test_image_export.py
+└── test_main.py
 ```
 
 ## Main concepts
@@ -33,8 +48,9 @@ dungeon-generator/
   2. Builds the BSP tree **iteratively** using a queue (avoids Python's recursion limit on deep/large maps).
   3. Carves rooms into every leaf.
   4. Collects corridors from the tree.
-  5. Paints rooms (`.`) and corridors (`,`) onto the wall grid (`#`).
-  - Supports a `seed` so the same seed always reproduces the same dungeon.
+  5. Assigns room types: `rooms[0]` is the entrance; the exit is whichever room is **farthest from the entrance** over the corridor graph (BFS, since the corridors form a tree); the deepest remaining leaf(s) become boss room(s) (capped to one if the depth heuristic would otherwise claim every remaining room) and the smallest room left after that becomes the treasure room; everything else is `NORMAL`.
+  6. Paints rooms (`.`), corridors (`,`), and the entrance/exit markers (`@`/`>`) onto the wall grid (`#`).
+  - Uses a `random.Random` instance seeded from `seed` (own instance, not the global `random` module), so the same seed always reproduces the same dungeon and generation doesn't disturb unrelated code using `random`.
 
 ## How to run it
 
@@ -71,6 +87,10 @@ python main.py --seed 42 --json
 Save to a file:
 ```
 python main.py --seed 42 --json > dungeon.json
+```
+Include the raw character grid in the JSON output (omitted by default):
+```
+python main.py --seed 42 --json --grid
 ```
 With a PNG image output:
 ```
@@ -116,7 +136,7 @@ python -m pytest tests/ -v
 
 - [x] **Room types** — `Room.room_type` field (`Enum`: `ENTRANCE`, `EXIT`, `TREASURE`, `BOSS`, `NORMAL`), assigned during generation: deepest leaf(s) → boss rooms, smallest remaining room → treasure, everything else → normal.
 
-- [x] **ENTRANCE/EXIT assignment** — assign `RoomType.ENTRANCE` to `rooms[0]` and `RoomType.EXIT` to `rooms[-1]` (deliberately deferred out of the room types work above, folded into the spawn/exit step below instead).
+- [x] **ENTRANCE/EXIT assignment** — assign `RoomType.ENTRANCE` to `rooms[0]` and `RoomType.EXIT` to the room farthest from it by corridor-graph distance (originally just `rooms[-1]`, which could collide with the boss/treasure assignment below and overwrite it — fixed by picking the exit via BFS and excluding entrance/exit from the boss/treasure candidate pool).
 
 - [x] **Image Exporter** —  Colors rooms by room_type, and needs no event loop or window management.
 
