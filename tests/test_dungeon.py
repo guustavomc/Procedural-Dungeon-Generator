@@ -1,3 +1,4 @@
+import pytest
 
 from dungeon import Dungeon
 from room_type import RoomType
@@ -35,8 +36,9 @@ class TestGenerate:
 
     def test_entrance_and_exit_are_assigned(self):
         dungeon = Dungeon(width=64, height=40, max_depth=5, seed=42).generate()
-        assert dungeon.rooms[0].room_type == RoomType.ENTRANCE
-        assert dungeon.rooms[-1].room_type == RoomType.EXIT
+        types = [r.room_type for r in dungeon.rooms]
+        assert types.count(RoomType.ENTRANCE) == 1
+        assert types.count(RoomType.EXIT) == 1
 
     def test_spawn_and_exit_markers_are_placed(self):
         dungeon = Dungeon(width=64, height=40, max_depth=5, seed=42).generate()
@@ -58,3 +60,18 @@ class TestGenerate:
 
         assert spawn_tiles == [entrance.center]
         assert exit_tiles == [exit_room.center]
+
+    def test_unseeded_generation_does_not_crash(self):
+        dungeon = Dungeon(width=50, height=30).generate()
+        assert dungeon.rooms
+        assert dungeon.is_connected()
+
+    @pytest.mark.parametrize("seed", range(50))
+    def test_special_rooms_survive_assignment(self, seed):
+        d = Dungeon(width=64, height=40, max_depth=5, seed=seed).generate()
+        types = [r.room_type for r in d.rooms]
+        assert types.count(RoomType.ENTRANCE) == 1
+        assert types.count(RoomType.EXIT) == 1
+        if len(d.rooms) >= 4:
+            assert RoomType.BOSS in types
+            assert RoomType.TREASURE in types
