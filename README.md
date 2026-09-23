@@ -146,4 +146,18 @@ python -m pytest tests/ -v
 
 - [x] **Image exporter color legend** — `exporters/image_export.py` colors rooms by `room_type` (`WALL_COLOR`, `CORRIDOR_COLOR`, `ROOM_COLORS`) but the exported PNG has no key explaining what each color means. Render a legend (swatch + label per `RoomType`, plus wall/corridor) onto the image, or as a separate strip, so the output is readable without reading the source.
 
-- [ ] **STL tile exporter** — export each tile type (wall, floor, corridor) as a printable 3D tile with standardized connectors, for physical dungeon sets. Builds directly on the STL generation work in [Drawer-Organizer-Builder](https://github.com/guustavomc/Drawer-Organizer-Builder).
+- [ ] **Corridor loops & cycle generation** — add a configurable `extra_corridors` / `loop_chance` parameter to connect geographically close rooms or corridors after the spanning tree is built. Eliminates tedious backtracking and creates multi-path layouts typical of roguelikes.
+
+- [ ] **Doors & entryways** — detect where corridors intersect room boundary walls and place doors (`+` on the ASCII grid, door objects in JSON, custom color in image exporter) with support for states (`OPEN`, `CLOSED`, `LOCKED`).
+
+- [ ] **Interactive web canvas visualizer** — a browser-based viewer to tweak generator parameters (seed, dimensions, depth) with live re-rendering, step-by-step BSP generation animations (splitting regions → carving rooms → connecting corridors), and an optional mini WASD crawler with fog-of-war.
+
+- [ ] **Room interior architecture & pillars** — introduce variety beyond plain rectangular boxes: interior stone pillars ($2\times2$ columns in large rooms), non-rectangular room masks (circular/elliptical, plus/cross shapes), and treasure alcoves.
+
+- [ ] **Dungeon content & entity spawning** — place monsters/mobs scaled by BFS distance from the entrance, chests and loot in `TREASURE` rooms, and traps/hazards in corridors, exported in the JSON layout.
+
+- [ ] **Key & lock progression** — require finding keys in dead-end rooms before unlocking doors leading to the `BOSS` room or `EXIT`, generated from the corridor graph dependency tree.
+
+- [ ] **Godot 4 / Tiled (.tmx) export** — export directly into Godot 4 `TileMapLayer` scene format or Tiled `.tmx` format so generated dungeons can be loaded into game engines without custom parsing code.
+
+- [ ] **STL tile exporter** — export each tile type (wall, floor, corridor) as a printable 3D tile with standardized connectors, for physical dungeon sets. Builds directly on the STL generation work in [Drawer-Organizer-Builder](https://github.com/guustavomc/Drawer-Organizer-Builder).
